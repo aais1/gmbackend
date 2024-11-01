@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Mailjet = require('node-mailjet');
 const mongoose = require('mongoose');
-const User = require('./models/User'); // Adjust the path as needed
-const DBConnect = require('./utils/db'); // Ensure this connects to your MongoDB
+const User = require('../models/User'); // Adjust the path as needed
+const DBConnect = require('../utils/db'); // Ensure this connects to your MongoDB
 const cors = require('cors');
 
 // Initialize Mailjet
@@ -13,7 +13,7 @@ const mailjet = Mailjet.apiConnect(
 );
 
 const app = express();
-app.use(cors());
+app.use(cors(*));
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
