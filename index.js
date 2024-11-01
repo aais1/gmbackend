@@ -138,6 +138,8 @@ app.post('/', async (req, res) => {
     }
 });
 
+module.exports = app;
+
 app.listen(PORT, () => {
     DBConnect(); // Connect to the database
     console.log(`Server is running on port ${PORT}`);
