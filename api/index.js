@@ -13,7 +13,7 @@ const mailjet = Mailjet.apiConnect(
 );
 
 const app = express();
-app.use(cors(*));
+app.use(cors({ origin: '*' }));
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
