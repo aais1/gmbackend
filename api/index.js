@@ -6,6 +6,7 @@ const User = require('../models/User'); // Adjust the path as needed
 const DBConnect = require('../utils/db'); // Ensure this connects to your MongoDB
 const cors = require('cors');
 
+
 // Initialize Mailjet
 const mailjet = Mailjet.apiConnect(
     '81c3db590a7594f3cb90af5eb61794b4',   // Your public API key
@@ -13,7 +14,15 @@ const mailjet = Mailjet.apiConnect(
 );
 
 const app = express();
-app.use(cors({ origin: '*' }));
+const corsOptions = {
+    origin: 'https://gamesmaster-wu3b.vercel.app', // Replace with your frontend URL
+    credentials: true,
+};
+  
+app.options('*', cors(corsOptions)); // Enable pre-flight across all routes
+
+
+  app.use(cors(corsOptions));
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
