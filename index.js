@@ -8,8 +8,8 @@ const cors = require('cors');
 
 // Initialize Mailjet
 const mailjet = Mailjet.apiConnect(
-    '81c3db590a7594f3cb90af5eb61794b4',   // Your public API key
-    '4d9a86f5ddba9153e3f49fe2e4457e8d'    // Your private API key
+    '2cad0509a0ea71037833d92c91b04c4f',   // Your public API key
+    'b4e8b0fcf13a05e032cd0f26f58f418b'    // Your private API key
 );
 
 const app = express();
