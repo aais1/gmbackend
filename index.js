@@ -82,8 +82,8 @@ app.post('/', async (req, res) => {
             Messages: [
                 {
                     From: {
-                        Email: 'aaisali228@gmail.com',
-                        Name: 'Ali Aais',
+                        Email: 'abismuhammad1@gmail.com',
+                        Name: 'Abis',
                     },
                     To: [
                         {
