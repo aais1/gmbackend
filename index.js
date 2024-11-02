@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Mailjet = require('node-mailjet');
 const mongoose = require('mongoose');
-const User = require('../models/User'); // Adjust the path as needed
-const DBConnect = require('../utils/db'); // Ensure this connects to your MongoDB
+const User = require('./models/User'); // Adjust the path as needed
+const DBConnect = require('./utils/db'); // Ensure this connects to your MongoDB
 const cors = require('cors');
 
 // Initialize Mailjet
@@ -16,8 +16,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-    origin: 'https://gamesmaster-wu3b.vercel.app', // Your frontend URL
-    credentials: true, // Allow credentials
+    origin: '*',
 };
 
 // Use CORS middleware
@@ -46,15 +45,16 @@ function generateRandomPassword(length = 8) {
 
 // Login route
 app.post('/login', async (req, res) => {
+    console.log('hi')
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email, password });
         if (!user) {
-            return res.status(401).send('User does not exist');
+            return res.status(401).send({error:'User does not exist'});
         }
         const passMatch = user.password === password;
         if (!passMatch) {
-            return res.status(401).send('Password does not match');
+            return res.status(401).send({error:'Password does not match'});
         }
         return res.status(200).send({ user });
     } catch (e) {
