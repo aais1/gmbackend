@@ -125,7 +125,10 @@ app.post('/', async (req, res) => {
         // Send the email
         request.then((result) => {
             console.log('Email sent:', result.body);
-        });
+        }).catch((err)=>{
+            console.error(err.message)
+            conosle.log('Email NOT SEND PLS CHK')
+        })
 
         // Create a new user in the database
         const newUser = new User({
