@@ -127,7 +127,7 @@ app.post('/', async (req, res) => {
             console.log('Email sent:', result.body);
         }).catch((err)=>{
             console.error(err.message)
-            conosle.log('Email NOT SEND PLS CHK')
+            console.log('Email NOT SEND PLS CHK')
         })
 
         // Create a new user in the database
