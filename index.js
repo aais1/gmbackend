@@ -73,78 +73,84 @@ app.post('/', async (req, res) => {
     const customerName = `${event.billing_address.first_name} ${event.billing_address.last_name}`;
     const items = event.line_items.map(item => `<li>${item.title} - €${item.price} x ${item.quantity}</li>`).join('');
 
-    // Generate a random password
-    const randomGeneratedPassword = generateRandomPassword();
-
-    const request = mailjet
-        .post('send', { version: 'v3.1' })
-        .request({
-            Messages: [
-                {
-                    From: {
-                        Email: 'abismuhammad1@gmail.com',
-                        Name: 'Abis',
-                    },
-                    To: [
-                        {
-                            Email: userEmail,
-                        },
-                    ],
-                    Subject: `Order Confirmation #${orderNumber}`,
-                    HTMLPart: `
-                        <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
-                            <h2 style="color: #4CAF50;">Order Confirmation #${orderNumber}</h2>
-                            <p>Hello ${customerName},</p>
-                            <p>Thank you for your order! Here are the details of your recent purchase:</p>
-                            <h3 style="color: #4CAF50;">Order Summary:</h3>
-                            <ul>${items}</ul>
-                            <p><strong>Total Amount:</strong> €${paymentDetails}</p>
-                            
-                            <h3 style="color: #4CAF50;">Account Details</h3>
-                            <p>You can log in to your account using the credentials below:</p>
-                            <p><strong>Email:</strong> ${userEmail}</p>
-                            <p><strong>Password:</strong> ${randomGeneratedPassword}</p>
-
-                            <p>To access the web application, please visit:</p>
-                            <p><a href="https://webapp.com" style="color: #4CAF50;">https://webapp.com</a></p>
-
-                            <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
-                            <p>If you have any questions, feel free to contact us at support@webapp.com!</p>
-
-                            <footer style="font-size: 0.9em; color: #777;">
-                                <p>Thank you for shopping with us!</p>
-                                <p>WebApp Team</p>
-                            </footer>
-                        </div>
-                    `,
-                },
-            ],
-        });
-
     try {
-        // Send the email
-        request.then((result) => {
-            console.log('Email sent:', result.body);
-        }).catch((err)=>{
-            console.error(err.message)
-            console.log('Email NOT SEND PLS CHK')
-        })
+        // Check if the user exists in the database
+        const existingUser = await User.findOne({ email: userEmail });
 
-        // Create a new user in the database
-        const newUser = new User({
-            email: userEmail,
-            password: randomGeneratedPassword, // Make sure to hash this in a real application
-        });
+        let passwordToSend;
 
-        await newUser.save();
-        console.log('User created:', newUser);
+        if (existingUser) {
+            // User exists, retrieve the existing password
+            passwordToSend = existingUser.password; // Ensure this is hashed in a real application
+        } else {
+            // User does not exist, generate a random password
+            passwordToSend = generateRandomPassword();
+            
+            // Create a new user in the database
+            const newUser = new User({
+                email: userEmail,
+                password: passwordToSend, // Make sure to hash this in a real application
+            });
 
-        res.status(200).send('Email sent and user created');
+            await newUser.save();
+            console.log('User created:', newUser);
+        }
+
+        // Send the email with the password
+        const request = mailjet
+            .post('send', { version: 'v3.1' })
+            .request({
+                Messages: [
+                    {
+                        From: {
+                            Email: 'abismuhammad1@gmail.com',
+                            Name: 'Abis',
+                        },
+                        To: [
+                            {
+                                Email: userEmail,
+                            },
+                        ],
+                        Subject: `Order Confirmation #${orderNumber}`,
+                        HTMLPart: `
+                            <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
+                                <h2 style="color: #4CAF50;">Order Confirmation #${orderNumber}</h2>
+                                <p>Hello ${customerName},</p>
+                                <p>Thank you for your order! Here are the details of your recent purchase:</p>
+                                <h3 style="color: #4CAF50;">Order Summary:</h3>
+                                <ul>${items}</ul>
+                                <p><strong>Total Amount:</strong> €${paymentDetails}</p>
+                                
+                                <h3 style="color: #4CAF50;">Account Details</h3>
+                                <p>You can log in to your account using the credentials below:</p>
+                                <p><strong>Email:</strong> ${userEmail}</p>
+                                <p><strong>Password:</strong> ${passwordToSend}</p>
+
+                                <p>To access the web application, please visit:</p>
+                                <p><a href="https://gamesmaster-wu3b.vercel.app/" style="color: #4CAF50;">https://gamesmaster-wu3b.vercel.app/</a></p>
+
+                                <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
+                                <p>If you have any questions, feel free to contact us at support@webapp.com!</p>
+
+                                <footer style="font-size: 0.9em; color: #777;">
+                                    <p>Thank you for buying our pack :)</p>
+                                </footer>
+                            </div>
+                        `,
+                    },
+                ],
+            });
+
+        await request;
+        console.log('Email sent:', userEmail);
+
+        res.status(200).send('Email sent successfully');
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Error processing request');
     }
 });
+
 
 // Start the server
 app.listen(PORT, () => {
