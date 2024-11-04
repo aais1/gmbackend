@@ -20,7 +20,8 @@
     "mailgun.js": "^10.2.3",
     "mongoose": "^8.7.3",
     "node-mailjet": "^6.0.6",
-    "nodemailer": "^6.9.15"
+    "nodemailer": "^6.9.15",
+    "resend": "4.0.1-alpha.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
