@@ -86,8 +86,8 @@ app.post('/', async (req, res) => {
         }
 
         // Send the email with Mailgun
-        await mg.messages.create('yourdomain.com', { // Replace 'yourdomain.com' with your verified Mailgun domain
-            from: "Abis <abismuhammad1@yourdomain.com>", // Use an email authorized under your domain
+        await mg.messages.create('sandbox-123.mailgun.org', { // Replace 'yourdomain.com' with your verified Mailgun domain
+            from: "Abis <mailgun@sandboxdc4ca5b04ee94b6abb302aeb4299c12b.mailgun.org>", // Use an email authorized under your domain
             to: [userEmail],
             subject: `Order Confirmation #${orderNumber}`,
             html: `
