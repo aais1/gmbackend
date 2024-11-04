@@ -1,13 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const formData = require('form-data'); // Import form-data
+const Mailgun = require('mailgun.js'); // Import mailgun.js
 const User = require('./models/User'); // Adjust the path as needed
 const DBConnect = require('./utils/db'); // Ensure this connects to your MongoDB
-const cors = require('cors');
-const Mailgun = require('mailgun.js');
 
-// Initialize Mailgun
-const mailgun = new Mailgun();
+// Initialize Mailgun with form-data
+const mailgun = new Mailgun(formData);
 const mg = mailgun.client({
     username: 'api',
     key: 'c6758be8e5a52cbb44340223e43d9827-f6fe91d3-487b03d3', // Replace with your API key
@@ -47,16 +48,11 @@ function generateRandomPassword(length = 8) {
 
 // Login route
 app.post('/login', async (req, res) => {
-    console.log('hi')
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email, password });
         if (!user) {
-            return res.status(401).send({error:'User does not exist'});
-        }
-        const passMatch = user.password === password;
-        if (!passMatch) {
-            return res.status(401).send({error:'Password does not match'});
+            return res.status(401).send({ error: 'User does not exist' });
         }
         return res.status(200).send({ user });
     } catch (e) {
@@ -67,7 +63,6 @@ app.post('/login', async (req, res) => {
 // Route for handling order confirmation and user creation
 app.post('/', async (req, res) => {
     const event = req.body;
-    console.log('hook received:', event);
 
     const userEmail = event.contact_email;
     const paymentDetails = event.current_total_price;
@@ -76,31 +71,23 @@ app.post('/', async (req, res) => {
     const items = event.line_items.map(item => `<li>${item.title} - €${item.price} x ${item.quantity}</li>`).join('');
 
     try {
-        // Check if the user exists in the database
         const existingUser = await User.findOne({ email: userEmail });
-
         let passwordToSend;
 
         if (existingUser) {
-            // User exists, retrieve the existing password
-            passwordToSend = existingUser.password; // Ensure this is hashed in a real application
+            passwordToSend = existingUser.password;
         } else {
-            // User does not exist, generate a random password
             passwordToSend = generateRandomPassword();
-            
-            // Create a new user in the database
             const newUser = new User({
                 email: userEmail,
-                password: passwordToSend, // Make sure to hash this in a real application
+                password: passwordToSend,
             });
-
             await newUser.save();
-            console.log('User created:', newUser);
         }
 
         // Send the email with Mailgun
-        await mg.messages.create('sandbox-123.mailgun.org', { // Replace with your Mailgun domain
-            from: "Abis <abismuhammad1@gmail.com>",
+        await mg.messages.create('yourdomain.com', { // Replace 'yourdomain.com' with your verified Mailgun domain
+            from: "Abis <abismuhammad1@yourdomain.com>", // Use an email authorized under your domain
             to: [userEmail],
             subject: `Order Confirmation #${orderNumber}`,
             html: `
@@ -131,7 +118,6 @@ app.post('/', async (req, res) => {
         });
 
         console.log('Email sent:', userEmail);
-
         res.status(200).send('Email sent successfully');
     } catch (err) {
         console.error('Error:', err);
@@ -139,10 +125,9 @@ app.post('/', async (req, res) => {
     }
 });
 
-
 // Start the server
 app.listen(PORT, () => {
-    DBConnect(); // Connect to the database
+    DBConnect();
     console.log(`Server is running on port ${PORT}`);
 });
 
