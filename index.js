@@ -12,7 +12,7 @@ const mailgun = new Mailgun(formData);
 const mg = mailgun.client({
     username: 'api',
     key: 'c6758be8e5a52cbb44340223e43d9827-f6fe91d3-487b03d3', // Replace with your API key
-    url: 'https://api.mailgun.net' // Use this if you are not using the EU infrastructure
+    url: 'https://api.eu.mailgun.net' // Use this if you are not using the EU infrastructure
 });
 
 const app = express();
