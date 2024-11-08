@@ -33,6 +33,7 @@ function generateRandomPassword(length = 8) {
 // Route for handling order confirmation and user creation
 app.post('/', async (req, res) => {
     const event = req.body;
+    console.log('Event:', event);
     const userEmail = event.contact_email;
     const orderNumber = event.order_number;
     const customerName = `${event.billing_address.first_name} ${event.billing_address.last_name}`;
