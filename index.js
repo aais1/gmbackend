@@ -38,6 +38,15 @@ app.post('/', async (req, res) => {
     const orderNumber = event.order_number;
     const customerName = `${event.billing_address.first_name} ${event.billing_address.last_name}`;
     const items = event.line_items.map(item => `<li>${item.title} - €${item.price} x ${item.quantity}</li>`).join('');
+    const totalPrice = event.current_total_price; // Assuming this contains the total price of the order
+
+    // Check if the order includes "All-in-one Maps Bundle"
+    const hasAllInOneBundle = event.line_items.some(item => item.title === "All-in-one Maps Bundle");
+
+    if (!hasAllInOneBundle) {
+        console.log("Order does not include All-in-one Maps Bundle. Skipping user creation and email sending.");
+        return res.status(200).send('Order does not include All-in-one Maps Bundle. No action taken.');
+    }
 
     try {
         const existingUser = await User.findOne({ email: userEmail });
@@ -49,7 +58,7 @@ app.post('/', async (req, res) => {
         // Send email using Resend
         await resend.emails.send({
             from: 'admin@thegamesmaster.com', // Replace with a verified sender
-            to: {userEmail},
+            to: userEmail,
             subject: `Order Confirmation #${orderNumber}`,
             html: `
                 <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
@@ -60,9 +69,7 @@ app.post('/', async (req, res) => {
                     
                     <h3 style="color: #4CAF50;">Order Details:</h3>
                     <ul>
-                        <li><strong>Product:</strong> ${productName}</li>
-                        <li><strong>Quantity:</strong> ${quantity}</li>
-                        <li><strong>Price:</strong> $${price}</li>
+                        ${items}
                     </ul>
                     <p><strong>Total:</strong> €${totalPrice}</p>
                     
@@ -81,7 +88,6 @@ app.post('/', async (req, res) => {
                 </div>
             `,
         });
-        
 
         console.log('Email sent:', userEmail);
         res.status(200).send('Email sent successfully');
@@ -90,6 +96,7 @@ app.post('/', async (req, res) => {
         res.status(500).send('Error processing request');
     }
 });
+
 
 // Start the server
 app.listen(PORT, () => {
