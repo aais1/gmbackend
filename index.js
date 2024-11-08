@@ -53,21 +53,34 @@ app.post('/', async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
                     <h2 style="color: #4CAF50;">Order Confirmation #${orderNumber}</h2>
-                    <p>Hello ${customerName},</p>
-                    <p>Thank you for your order! Here are the details of your recent purchase:</p>
-                    <h3 style="color: #4CAF50;">Order Summary:</h3>
-                    <ul>${items}</ul>
-                    <p><strong>Total Amount:</strong> €${event.current_total_price}</p>
-                    <h3 style="color: #4CAF50;">Account Details</h3>
+                    <p>Hello <strong>${customerName}</strong> 😊</p>
+                    <p><strong>Thank you for choosing us!</strong></p>
+                    <p>Below are all the details about your order.</p>
+                    
+                    <h3 style="color: #4CAF50;">Order Details:</h3>
+                    <ul>
+                        <li><strong>Product:</strong> ${productName}</li>
+                        <li><strong>Quantity:</strong> ${quantity}</li>
+                        <li><strong>Price:</strong> $${price}</li>
+                    </ul>
+                    <p><strong>Total:</strong> €${totalPrice}</p>
+                    
+                    <h3 style="color: #4CAF50;">Account Details:</h3>
                     <p><strong>Email:</strong> ${userEmail}</p>
                     <p><strong>Password:</strong> ${passwordToSend}</p>
-                    <p><a href="https://gamesmaster-wu3b.vercel.app/" style="color: #4CAF50;">Access the web application</a></p>
+                    
+                    <p><a href="https://gamesmaster-wu3b.vercel.app/" style="color: #4CAF50;">Login now to our web app</a></p>
+                    
+                    <p>If you have any questions or need assistance, please feel free to contact me. I am here to help you!</p>
+                    
                     <footer style="font-size: 0.9em; color: #777;">
-                        <p>Thank you for buying our pack :)</p>
+                        <p>Sincerely,</p>
+                        <p>Adam Carpio<br>Games Master | Team</p>
                     </footer>
                 </div>
             `,
         });
+        
 
         console.log('Email sent:', userEmail);
         res.status(200).send('Email sent successfully');
