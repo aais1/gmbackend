@@ -48,7 +48,7 @@ app.post('/', async (req, res) => {
         // Send email using Resend
         await resend.emails.send({
             from: 'admin@thegamesmaster.com', // Replace with a verified sender
-            to: 'aaisali228@gmail.com',
+            to: {userEmail},
             subject: `Order Confirmation #${orderNumber}`,
             html: `
                 <div style="font-family: Arial, sans-serif; color: #333; padding: 20px;">
