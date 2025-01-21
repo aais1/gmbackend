@@ -32,6 +32,42 @@ function generateRandomPassword(length = 8) {
     return password;
 }
 
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body; // Extract email and password from the payload
+
+    // Validate payload
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    try {
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Compare provided password with stored password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid email or password.' });
+        }
+
+        // Successful login
+        res.status(200).json({
+            message: 'Login successful',
+            user: {
+                email: user.email,
+                createdAt: user.createdAt
+            }
+        });
+    } catch (err) {
+        console.error('Error during login:', err);
+        res.status(500).json({ error: 'An error occurred during login.' });
+    }
+});
+
+
 // Route for handling order confirmation and user creation
 app.post('/', async (req, res) => {
     const event = req.body;
