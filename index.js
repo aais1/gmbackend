@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const User = require('./models/User');
 const DBConnect = require('./utils/db');
-const { Resend } = require('resend'); // Import Resend
+const { Resend } = require('resend'); // Import Resendv
+const bcrypt = require('bcrypt');
 
 // Initialize Resend with your API key
 const resend = new Resend('re_c7hUhQHy_DkTznyLJ2R2tGjXoVmMTmgJ8'); // Replace with your Resend API key
