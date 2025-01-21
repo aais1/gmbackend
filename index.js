@@ -3,8 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const User = require('./models/User');
 const DBConnect = require('./utils/db');
-const { Resend } = require('resend'); // Import Resendv
-const bcrypt = require('bcrypt');
+const { Resend } = require('resend'); // Import Resend
 
 // Initialize Resend with your API key
 const resend = new Resend('re_c7hUhQHy_DkTznyLJ2R2tGjXoVmMTmgJ8'); // Replace with your Resend API key
@@ -33,6 +32,7 @@ function generateRandomPassword(length = 8) {
     return password;
 }
 
+// Login route
 app.post('/login', async (req, res) => {
     const { email, password } = req.body; // Extract email and password from the payload
 
@@ -49,8 +49,7 @@ app.post('/login', async (req, res) => {
         }
 
         // Compare provided password with stored password
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
+        if (password !== user.password) {
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
 
@@ -67,7 +66,6 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ error: 'An error occurred during login.' });
     }
 });
-
 
 // Route for handling order confirmation and user creation
 app.post('/', async (req, res) => {
@@ -120,27 +118,4 @@ app.post('/', async (req, res) => {
                     
                     <p>If you have any questions or need assistance, please feel free to contact me. I am here to help you!</p>
                     
-                    <footer style="font-size: 0.9em; color: #777;">
-                        <p>Sincerely,</p>
-                        <p>Adam Carpio<br>Games Master | Team</p>
-                    </footer>
-                </div>
-            `,
-        });
-
-        console.log('Email sent:', userEmail);
-        res.status(200).send('Email sent successfully');
-    } catch (err) {
-        console.error('Error:', err);
-        res.status(500).send('Error processing request');
-    }
-});
-
-
-// Start the server
-app.listen(PORT, () => {
-    DBConnect();
-    console.log(`Server is running on port ${PORT}`);
-});
-
-module.exports = app;
+                    <footer style="font-size: 0.9em; color: #777;
