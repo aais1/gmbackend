@@ -76,7 +76,7 @@ app.post('/', async (req, res) => {
     const totalPrice = event.current_total_price;
 
     const hasAllInOneBundle = event.line_items.some(
-        (item) => item.title === 'All-in-one Maps Bundle'
+        (item) => item.title === 'Ultimate RPG Maps Collection'
     );
 
     if (!hasAllInOneBundle) {
